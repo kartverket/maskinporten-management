@@ -67,6 +67,38 @@ class ScopesTest {
         assertTrue("enforced_aud_for_access_token" !in created)
     }
 
+    // Digdir requires no fields, and its own example sends only these three
+    @Test
+    fun testScopesPostWithOnlyPrefixSubscopeAndDescriptionGetsDefaults() = testApp {
+        client.post("/api/v1/scopes") {
+            contentType(ContentType.Application.Json)
+            setBody("""{ "prefix": "kartverk", "subscope": "test.read", "description": "Test scope" }""")
+        }.apply {
+            assertEquals(HttpStatusCode.OK, status)
+        }
+
+        val created = client.get("/api/v1/scopes/scope?scope=kartverk:test.read").jsonObject()
+        assertEquals("true", created.string("active"))
+        assertEquals(listOf("maskinporten"), created.strings("allowed_integration_types"))
+        assertEquals("PUBLIC", created.string("visibility"))
+        assertEquals("SELF_CONTAINED", created.string("token_type"))
+        assertEquals("120", created.string("at_max_age"))
+        assertEquals("false", created.string("requires_user_authentication"))
+        assertEquals("false", created.string("requires_pseudonymous_tokens"))
+        assertEquals("false", created.string("requires_user_consent"))
+        assertEquals("false", created.string("accessible_for_all"))
+    }
+
+    @Test
+    fun testScopesPostWithoutDescriptionIsRejected() = testApp {
+        client.post("/api/v1/scopes") {
+            contentType(ContentType.Application.Json)
+            setBody("""{ "prefix": "kartverk", "subscope": "test.read" }""")
+        }.apply {
+            assertEquals(HttpStatusCode.BadRequest, status)
+        }
+    }
+
     @Test
     fun testScopesPostWithoutBodyIsRejected() = testApp {
         client.post("/api/v1/scopes").apply {

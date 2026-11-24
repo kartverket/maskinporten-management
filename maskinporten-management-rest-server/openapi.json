@@ -2,7 +2,7 @@
     "openapi": "3.1.1",
     "info": {
         "title": "Maskinporten Management REST API",
-        "version": "v0",
+        "version": "v1",
         "description": "Manages Kartverket's Maskinporten scopes through Digdir's API. It lists, creates, updates and deletes the\nscopes. It also lists, gives and removes organisations' access to them, and shows the changes to that access.\n\nFiltering is set for each deployment of this API. When it is on, `GET /api/scopes` and\n`GET /api/scopeaccess/scopes` only show the scopes the calling app has access to, and need the\n`X-Forwarded-Client-Cert` header. When it is off, nothing is left out. Answers use Digdir's field names, but\nonly hold the fields described here: a field Digdir adds later is left out.\n\nWhen Digdir rejects a request, this API answers with Digdir's status and explanation, in its own error format.\nThe exception is a `401`: Digdir refused this API's token, not your request, so this API answers `502`."
     },
     "paths": {
